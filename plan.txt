@@ -5,4 +5,6 @@ post uchun functionlar:addPost ,getPost ,deletePost,updatePost,likes
 
 comment uchun functionlar: addComment ,deleteComment ,getComment, updateCommnet
 
-notficantion uchun functionlar: sendNTF ,getNTF,checkNTF
+notficantion uchun functionlar: sendNTF ,getNTF,checkNTF, 
+
+man oybek
