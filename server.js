@@ -13,6 +13,7 @@ dotenv.config()
 
 // import....
 const auth=require('./src/router/authRouter')
+const postU=require('./src/router/postRouter')
  
 const app=express()
 const PORT= process.env.PORT||4001
@@ -23,6 +24,7 @@ app.use(fileupload({useTempFiles:true}))
  
 /// router..
 app.use("/api",auth)
+app.use("/api",postU)
 
 const MONGO_URL=process.env.MONGO_URL
 mongoose.connect(MONGO_URL).then(()=>{

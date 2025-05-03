@@ -10,10 +10,11 @@ const UserSchema = new mongoose.Schema({
     },
   hobby: { 
     type: String,
+    default:''
     },
   work: { 
     type: String,
-     required: true 
+    default:''
     },
   email: { 
     type: String,  
@@ -33,7 +34,7 @@ const UserSchema = new mongoose.Schema({
   followed: [{ 
     type: mongoose.Schema.Types.ObjectId,
      ref: 'User' }],
-     
+
      role:{
       type:String,
       default:"user",

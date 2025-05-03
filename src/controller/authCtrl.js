@@ -7,11 +7,12 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const authCtrl = {
   signup: async (req, res) => {
     try {
-      const { username, surname, email, password, dateBirth } = req.body;
+      const { username, surname, email, password, dateBirth,role } = req.body;
   
       if (!username || !surname || !email || !password || !dateBirth) {
         return res.status(403).json({ message: "Please fill all fields" });
       }
+      
       const birthDate = new Date(dateBirth);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -36,7 +37,8 @@ const authCtrl = {
         surname,
         email,
         password: hashPassword,
-        dateBirth
+        dateBirth,
+        role
       });
   
       await newUser.save();
