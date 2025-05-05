@@ -8,7 +8,8 @@ const PostSchema = new mongoose.Schema({
     },
     postImage: {
         type: Object,
-        default:{}
+        // default:{},
+        default: () => ({}) 
     },
     content: {
         type: String
@@ -22,6 +23,6 @@ const PostSchema = new mongoose.Schema({
         ref: 'User'
     }],
 
-}, { timestamps: true });
+}, { timestamps: true,minimize:false });
 
 module.exports = mongoose.model('Post', PostSchema);

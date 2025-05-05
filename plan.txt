@@ -1,9 +1,13 @@
-user uchun functionlar : login✅ ,signup✅ ,deleteUser,updateUser,gatAll,getOne ,searchUser,
-follow,unfollow;
+user uchun functionlar : login1️⃣✅ ,signup2️⃣✅ ,deleteUser3️⃣,updateUser4️⃣,gatAll5️⃣✅,getOne6️⃣✅ ,searchUser7️⃣✅,
+follow8️⃣,unfollow9️⃣ ;
 
-post uchun functionlar:addPost ,getPost ,deletePost,updatePost,likes,myFollower
+post uchun functionlar: addPost🔟✅ , getPost1️⃣1️⃣✅ , deletePost1️⃣2️⃣  , updatePost1️⃣3️⃣, likes1️⃣4️⃣, myFollower1️⃣5️⃣ 
 
-comment uchun functionlar: addComment ,deleteComment ,getComment, updateCommnet
+comment uchun functionlar: addComment1️⃣6️⃣ , deleteComment1️⃣7️⃣, getComment1️⃣8️⃣ ,  updateCommnet1️⃣9️⃣
 
-notficantion uchun functionlar: sendNTF ,getNTF,checkNTF, 
+notficantion uchun functionlar: sendNTF2️⃣0️⃣ , getNTF2️⃣1️⃣ , checkNTF2️⃣2️⃣ , 
 
+
+
+
+3-may 22/4 , 5-may 22/6, 5-may 22/7 17:00,

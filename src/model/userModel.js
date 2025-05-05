@@ -26,7 +26,8 @@ const UserSchema = new mongoose.Schema({
     , required: true 
 },
   profileImage: {
-     type: Object
+     type: Object,
+     default: () => ({})
    },
   follower: [{ 
     type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +46,6 @@ const UserSchema = new mongoose.Schema({
      type: Date,
      required:true
      }
-},{ timestamps: true });
+},{ timestamps: true,minimize:true });
 
 module.exports = mongoose.model('User', UserSchema);
