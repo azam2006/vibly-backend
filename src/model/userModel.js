@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
   password: {
      type: String
     , required: true 
-},
+   },
   profileImage: {
      type: Object,
      default: () => ({})
@@ -36,16 +36,19 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
      ref: 'User' }],
 
-     role:{
+  role:{
       type:String,
       default:"user",
       enum:['user','admin','mode'], 
   },
-
-  dateBirth: {
+    dateBirth: {
      type: Date,
      required:true
-     }
+     },
+     savedPost: [{ 
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'Post' }],
+
 },{ timestamps: true,minimize:true });
 
 module.exports = mongoose.model('User', UserSchema);

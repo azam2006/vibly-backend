@@ -20,10 +20,11 @@ const postCtrl = {
       try {
         const { content } = req.body;
         const userId = req.user._id;
-  
+        
         if (!content) {
           return res.status(403).json({ message: "Please fill all fields 😡" });
-        }
+        } 
+
   
         let image = {};
   
@@ -42,6 +43,7 @@ const postCtrl = {
             public_id: result.public_id,
           };
         }
+        
   
         const newPost = await Post.create({
           userId,

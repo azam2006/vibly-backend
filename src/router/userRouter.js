@@ -7,4 +7,5 @@ router.get('/user',User.getAllUsers)
 router.get('/user/:id',User.getOneUser)
 router.get('/user',User.searchUser)
 
+
 module.exports=router

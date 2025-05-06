@@ -5,4 +5,4 @@ const user=require("../controller/authCtrl")
 router.post('/signup',user.signup)
 router.post('/login',user.login)
 
-module.exports=router
+module.exports=router 

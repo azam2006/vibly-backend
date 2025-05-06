@@ -28,6 +28,8 @@ app.use("/api",authR)
 app.use("/api",postR)
 app.use("/api",userR)
 
+
+
 const MONGO_URL=process.env.MONGO_URL
 mongoose.connect(MONGO_URL).then(()=>{
     app.listen(PORT,()=>{console.log(`${PORT}-working`);
