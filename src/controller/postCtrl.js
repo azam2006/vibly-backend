@@ -66,7 +66,39 @@ const postCtrl = {
         console.log(error);
         res.status(503).json({ message: error.message });
        } 
-    }
+    },
+    likePost: async (req, res) => {
+      try {
+          const { postId } = req.params;
+          const userId = req.user._id;
+          const post = await Post.findById(postId);
+          if (!post) {
+              return res.status(404).json({ message: "Post not found" });
+          }
+  
+          const isLiked = post.likes.includes(userId);
+          if (isLiked) {
+            //  unliked
+              post.likes.pull(userId);
+          } else {
+            // like
+              post.likes.push(userId);
+          }
+  
+          // Saqlaymiz
+          await post.save();
+  
+          res.status(200).json({
+              message: isLiked ? "Post unliked" : "Post liked",
+              likesCount: post.likes.length,
+              allLikes: post
+          });
+      } catch (error) {
+          console.log(error);
+          res.status(503).json({ message: error.message });
+      }
+  }
+  
   };
   
 

@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema({
      type: Date,
      required:true
      },
-     savedPost: [{ 
+     savedPosts: [{ 
       type: mongoose.Schema.Types.ObjectId,
        ref: 'Post' }],
 

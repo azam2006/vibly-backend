@@ -1,18 +1,24 @@
 user uchun functionlar : login1️⃣✅ ,signup2️⃣✅ ,deleteUser3️⃣,updateUser4️⃣,gatAll5️⃣✅,getOne6️⃣✅ ,searchUser7️⃣✅,
-follow8️⃣,unfollow9️⃣ ;
+follow8️⃣✅,unfollow9️⃣✅ ;
 
-post uchun functionlar: addPost🔟✅ , getPost1️⃣1️⃣✅ , deletePost1️⃣2️⃣  , updatePost1️⃣3️⃣, likes1️⃣4️⃣, myFollower1️⃣5️⃣ 
+post uchun functionlar: addPost🔟✅ , getPost1️⃣1️⃣✅ , deletePost1️⃣2️⃣  , updatePost1️⃣3️⃣, likes1️⃣4️⃣✅, myFollower1️⃣5️⃣ 
 
-comment uchun functionlar: addComment1️⃣6️⃣ , deleteComment1️⃣7️⃣, getComment1️⃣8️⃣ ,  updateCommnet1️⃣9️⃣
+comment uchun functionlar: addComment1️⃣6️⃣✅ , deleteComment1️⃣7️⃣, getComment1️⃣8️⃣✅ ,  updateCommnet1️⃣9️⃣
 
 notficantion uchun functionlar: sendNTF2️⃣0️⃣ , getNTF2️⃣1️⃣ , checkNTF2️⃣2️⃣ , 
 
+qo'shimcha : savedPost2️⃣3️⃣✅
 
 
+3-may 22/4 , 5-may 22/6, 5-may 22/7 17:00,6-may 23/8 ,6-may 23/9 18:50, 6-may 23/10 23:00,6-may 23/11 23:20 
+ 6-may 23:45 23/12 ,7-may 23/13,
 
-3-may 22/4 , 5-may 22/6, 5-may 22/7 17:00,
+
 
 
 deleteUser-user o'chib ketisin keyin unga tegishli postlar(like ,comment ham) o'chrsin va followda shu user Idsi bo'lsa olib tashlasin
 
 
+✅-bajarilgan
+❌-bekor qiligan
+⌛-to'liq emas

@@ -15,6 +15,7 @@ dotenv.config()
 const authR=require('./src/router/authRouter')
 const postR=require('./src/router/postRouter')
 const userR =require('./src/router/userRouter')
+const commentR =require('./src/router/commentRouter')
  
 const app=express()
 const PORT= process.env.PORT||4001
@@ -27,6 +28,7 @@ app.use(fileupload({useTempFiles:true}))
 app.use("/api",authR)
 app.use("/api",postR)
 app.use("/api",userR)
+app.use("/api",commentR)
 
 
 

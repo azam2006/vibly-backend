@@ -6,6 +6,8 @@ const User=require("../controller/userCtrl")
 router.get('/user',User.getAllUsers)
 router.get('/user/:id',User.getOneUser)
 router.get('/user',User.searchUser)
+router.put('/follow/:id',middelware,User.follow)
+router.put('/save/:postId',middelware,User.savedPost)
 
 
 module.exports=router
