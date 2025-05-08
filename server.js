@@ -16,6 +16,7 @@ const authR=require('./src/router/authRouter')
 const postR=require('./src/router/postRouter')
 const userR =require('./src/router/userRouter')
 const commentR =require('./src/router/commentRouter')
+const notficantionR =require('./src/router/notificationR')
  
 const app=express()
 const PORT= process.env.PORT||4001
@@ -29,6 +30,7 @@ app.use("/api",authR)
 app.use("/api",postR)
 app.use("/api",userR)
 app.use("/api",commentR)
+app.use("/api",notficantionR)
 
 
 

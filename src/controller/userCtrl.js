@@ -1,3 +1,4 @@
+const notificationM = require("../model/notificationM");
 const Post = require("../model/postModel");
 const User = require("../model/userModel")
 
@@ -88,52 +89,10 @@ const userCtrl = {
     //         res.status(503).json({ message: error.message });
     //     }
     // },
-    follow: async (req, res) => {
-        try {
-            const { id } = req.params; // kimni follow qilish kerak
-            const userId = req.user._id;    // kim follow qilyapti
-    
-            if (userId === id) {
-                return res.status(400).json({ message: "You can't follow yourself" });
-            }
-    
-            const userToFollow = await User.findById(id);
-            const currentUser = await User.findById(userId);
-    
-            if (!userToFollow || !currentUser) {
-                return res.status(404).json({ message: "User not found" });
-            }
-    
-            const isFollowing = userToFollow.follower.includes(userId);
-    
-            if (isFollowing) {
-                // unfollow
-                userToFollow.follower.pull(userId);
-                currentUser.followed.pull(id);
-            } else {
-                // follow
-                userToFollow.follower.push(userId);
-                currentUser.followed.push(id);
-            }
-    
-            await userToFollow.save();
-            await currentUser.save();
-    
-            res.status(200).json({
-                message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
-                followersCount: userToFollow.follower.length,
-                user:userToFollow
-            });
-    
-        } catch (error) {
-            console.log(error);
-            res.status(503).json({ message: error.message });
-        }
-    },
     searchUser: async (req, res) => {
         try {
             const query = req.query.search;
-
+            
             const users = await User.find({
                 $or: [
                     { username: { $regex: query, $options: "i" } },
@@ -147,6 +106,7 @@ const userCtrl = {
             res.status(503).json({ message: error.message });
         }
     },
+   
     savedPost: async (req, res) => {
         try {
             const { postId } = req.params;
@@ -182,8 +142,54 @@ const userCtrl = {
             console.log(error);
             res.status(503).json({ message: error.message });
         }
-    }
+    },
+    follow: async (req, res) => {
+        try {
+            const { id } = req.params; // kimni follow qilish kerak
+            const userId = req.user._id;    // kim follow qilyapti
     
+            if (userId === id) {
+                return res.status(400).json({ message: "You can't follow yourself" });
+            }
+    
+            const userToFollow = await User.findById(id);
+            const currentUser = await User.findById(userId);
+    
+            if (!userToFollow || !currentUser) {
+                return res.status(404).json({ message: "User not found" });
+            }
+    
+            const isFollowing = userToFollow.follower.includes(userId);
+    
+            if (isFollowing) {
+                // unfollow
+                userToFollow.follower.pull(userId);
+                currentUser.followed.pull(id);
+            } else {
+                // follow
+                userToFollow.follower.push(userId);
+                currentUser.followed.push(id);
+                await notificationM.create({
+                    recipient: userToFollow._id,
+                    sender: userId,
+                    type: 'follow'
+                  });
+            }
+    
+            await userToFollow.save();
+            await currentUser.save();
+    
+            res.status(200).json({
+                message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
+                followersCount: userToFollow.follower.length,
+                user:userToFollow
+            });
+    
+        } catch (error) {
+            console.log(error);
+            res.status(503).json({ message: error.message });
+        }
+    },
     
 
 

@@ -1,5 +1,6 @@
 const Post = require("../model/postModel")
-const Comment = require("../model/commetModel")
+const Comment = require("../model/commetModel");
+const notificationM = require("../model/notificationM");
 
 const commentCtrl={
     addComment: async (req, res) => {
@@ -19,6 +20,13 @@ const commentCtrl={
             await Post.findByIdAndUpdate(postId, {
                 $push: { comments: newComment._id }
             });
+            await notificationM.create({
+                recipient: post.userId,
+                sender: userId,
+                type: 'comment',
+                postId: post._id
+              });
+              
     
             res.status(201).json({ message: "Comment added successfully!", comment: newComment });
     
@@ -49,6 +57,7 @@ const commentCtrl={
     },
     deleteComment:async(req,res)=>{
         try {
+            
             
         } catch (error) {
             console.log(error);

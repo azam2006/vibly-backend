@@ -32,7 +32,6 @@ const NotificationSchema = new mongoose.Schema(
     }
   },
   {
-    // createdAt va updatedAt avtomatik qo‘shiladi
     timestamps: true
   }
 );
