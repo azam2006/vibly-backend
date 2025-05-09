@@ -188,15 +188,13 @@ const postCtrl = {
     try {
       const { id } = req.params;
       const userId = req.user._id;
+      const isAdmin = req.userAdmin;
 
 
       const post = await Post.findById(id);
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-
-      const user = await User.findById(userId);
-      const isAdmin = user.userAdmin;
       const isOwner = post.userId.toString() === userId.toString();
 
       if (!isOwner && !isAdmin) {
@@ -227,7 +225,7 @@ const postCtrl = {
         removeTempFile(postImage.tempFilePath);
 
         post.postImage = {
-          url: result.secure_url,
+          url: result.url,
           public_id: result.public_id,
         };
       }

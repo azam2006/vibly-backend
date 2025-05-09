@@ -1,7 +1,25 @@
 const notificationM = require("../model/notificationM");
 const Post = require("../model/postModel");
 const User = require("../model/userModel")
+const Comment = require("../model/commetModel")
+const cloudinary=require("cloudinary")
+const fs=require("fs")
 
+cloudinary.config({
+  cloud_name: process.env.ClOUD_NAME,
+  api_key: process.env.ClOUD_API_KEY,
+  api_secret: process.env.ClOUD_API_SECRET,
+});
+
+const removeTempFile = (path) => {
+   fs.unlink(path, (err) => {
+    if (err) {
+      console.error("Temporary file could not be removed:", err.message);
+    } else {
+      console.log("Temporary file removed:", path);
+    }
+  });
+};
 const userCtrl = {
     getAllUsers: async (req, res) => {
         try {
@@ -49,46 +67,6 @@ const userCtrl = {
             res.status(503).json({ message: error.message });
         }
     },
-    // follow: async (req, res) => {
-    //     try {
-    //         const { id } = req.params; // kimni follow qilmoqchisiz
-    //         const currentUserId = req.user._id;    // hozirgi user
-    
-    //         if (currentUserId.toString() === id) {
-    //             return res.status(400).json({ message: "You can't follow yourself" });
-    //         }
-    
-    //         const userToFollow = await User.findById(id);
-    //         const currentUser = await User.findById(currentUserId);
-    
-    //         if (!userToFollow || !currentUser) {
-    //             return res.status(404).json({ message: "User not found" });
-    //         }
-    
-    //         const isAlreadyFollowing = userToFollow.follower.includes(currentUserId);
-    
-    //         if (isAlreadyFollowing) {
-    //             return res.status(200).json({ message: "You are already following this user" });
-    //         }
-    
-    //         // follow qilish
-    //         userToFollow.follower.push(currentUserId);
-    //         currentUser.followed.push(id);
-    
-    //         await userToFollow.save();
-    //         await currentUser.save();
-    
-    //         res.status(200).json({
-    //             message: "Followed successfully",
-    //             followersCount: userToFollow.follower.length,
-    //             followedUser:userToFollow
-    //         });
-    
-    //     } catch (error) {
-    //         console.log(error);
-    //         res.status(503).json({ message: error.message });
-    //     }
-    // },
     searchUser: async (req, res) => {
         try {
             const query = req.query.search;
@@ -190,6 +168,172 @@ const userCtrl = {
             res.status(503).json({ message: error.message });
         }
     },
+//  deleteUser: async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const userId = req.user._id;
+//     const isAdmin = req.userAdmin;
+
+//     // Only self or admin can delete
+//     if (userId.toString() !== id.toString() && !isAdmin) {
+//       return res.status(403).json({ message: "Access denied" });
+//     }
+
+//     const user = await User.findById(id);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Delete user's posts and related comments
+//     const posts = await Post.find({ userId: id });
+//     for (const post of posts) {
+//       await Comment.deleteMany({ postId: post._id });
+
+//       // Delete post image from Cloudinary
+//       if (post.postImage?.public_id) {
+//         await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+//       }
+//     }
+//     await Post.deleteMany({ userId: id });
+
+//     // Delete user's comments
+//     await Comment.deleteMany({ userId: id });
+
+//     // Remove user from followers/followed lists
+//     await User.updateMany({ follower: id }, { $pull: { follower: id } });
+//     await User.updateMany({ followed: id }, { $pull: { followed: id } });
+
+//     // Delete user's profile and cover images from Cloudinary
+//     if (user.profileImage?.public_id) {
+//       await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+//     }
+   
+
+//     // Delete user
+//     await user.deleteOne();
+
+//     res.status(200).json({ message: "User and associated data deleted successfully" ,deletedUser:user,deletePost:post });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(503).json({ message: error.message });
+//   }
+// }
+deleteUser: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const isAdmin = req.userAdmin;
+
+    // Faqat o'zini yoki admin o'chira oladi
+    if (userId.toString() !== id.toString() && !isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Post va commentlarni topamiz
+    const posts = await Post.find({ userId: id });
+    const comments = await Comment.find({ userId: id });
+
+    // Postlar mavjud bo‘lsa, ularga tegishli commentlar va rasmni o‘chiramiz
+    if (posts.length > 0) {
+      for (const post of posts) {
+        await Comment.deleteMany({ postId: post._id });
+
+        if (post.postImage?.public_id) {
+          await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+        }
+      }
+      await Post.deleteMany({ userId: id });
+    }
+
+    // Commentlar mavjud bo‘lsa, o‘chiramiz
+    if (comments.length > 0) {
+      await Comment.deleteMany({ userId: id });
+    }
+
+    // Follower/followed ro‘yxatlaridan olib tashlaymiz
+    await User.updateMany({ follower: id }, { $pull: { follower: id } });
+    await User.updateMany({ followed: id }, { $pull: { followed: id } });
+
+    // Cloudinary dagi profil rasm(lar)ini o‘chirish
+    if (user.profileImage?.public_id) {
+      await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+    }
+    
+
+    // Foydalanuvchini o‘chirish
+    await user.deleteOne();
+
+    res.status(200).json({
+      message: "User and associated data deleted successfully",
+      deletedUser:user,
+      deletedPosts: posts,
+      deletedComments: comments
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(503).json({ message: error.message });
+  }
+},
+updateUser: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const isAdmin = req.userAdmin;
+
+    if (userId.toString() !== id.toString() && !isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (req.files?.profileImage) {
+      const file = req.files.profileImage;
+
+      // Eski rasmni o‘chirish
+      if (user.profileImage?.public_id) {
+        await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+      }
+
+      // Yangi rasmni Cloudinary’ga yuklash
+      const result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
+        folder: "onlineGallary"
+      });
+
+      // Vaqtinchalik faylni o‘chirish
+      removeTempFile(file.tempFilePath);
+
+      // Rasmni yangilangan ma'lumotlarga qo‘shish
+      req.body.profileImage = {
+        url: result.url,
+        public_id: result.public_id
+      };
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      updatedUser
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
+
+
+
     
 
 
