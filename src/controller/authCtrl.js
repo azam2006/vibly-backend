@@ -12,6 +12,10 @@ const authCtrl = {
       if (!username || !surname || !email || !password || !dateBirth) {
         return res.status(403).json({ message: "Please fill all fields" });
       }
+      const oldUser = await User.findOne({ email });
+      if (oldUser) {
+        return res.status(400).json({ message: "This email already exists!" });
+      }
       
       const birthDate = new Date(dateBirth);
       const today = new Date();
@@ -25,10 +29,6 @@ const authCtrl = {
         return res.status(403).json({ message: "You must be at least 18 years old to sign up." });
       }
       
-      const oldUser = await User.findOne({ email });
-      if (oldUser) {
-        return res.status(400).json({ message: "This email already exists!" });
-      }
       
       const hashPassword = await bcrypt.hash(password, 10);
       

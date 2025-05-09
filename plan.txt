@@ -14,8 +14,8 @@ post uchun functionlar:
 11.getPost✅
 12.likes✅ 
 13.myFollower✅
-14.deletePost  
-15.updatePost
+14.deletePost✅
+15.updatePost ✅
 
 comment uchun functionlar: 
 16.addComment✅ 
@@ -31,8 +31,12 @@ notficantion uchun functionlar:
 qo'shimcha : 23.savedPost✅ 24.getOnePost✅,25.socket-connect
 
 
-3-may 25/4 , 5-may 25/6, 5-may 25/7 17:00,6-may 25/8 ,6-may 25/9 18:50, 6-may 25/10 25:00,6-may 25/11 25:20 
-6-may 25:45 25/12 ,7-may 25/13, 7-may 25/14 14:30,7-may 25/15 19:10 ,7-may 25/17 21:30 ,8-may 25/18
+3-may 25/4 ,
+5-may 25/6, 5-may 25/7 17:00
+6-may 25/8 ,6-may 25/9 18:50, 6-may 25/10 25:00,6-may 25/11 25:20 6-may 25:45 25/12
+7-may 25/13, 7-may 25/14 14:30,7-may 25/15 19:10 ,7-may 25/17 21:30 ,
+8-may 25/18
+9-may  25/20
 
 
 

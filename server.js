@@ -20,6 +20,14 @@ const notficantionR =require('./src/router/notificationR')
  
 const app=express()
 const PORT= process.env.PORT||4001
+const server=http.createServer(app)
+const io = socketIo(server,{
+    cors:{
+        // origin:"www.netlify-chat-app.netlify.app"
+        origin:"*"
+        // method:["GET","POST"]
+    }
+})
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -34,6 +42,7 @@ app.use("/api",notficantionR)
 
 
 
+
 const MONGO_URL=process.env.MONGO_URL
 mongoose.connect(MONGO_URL).then(()=>{
     app.listen(PORT,()=>{console.log(`${PORT}-working`);
@@ -42,3 +51,39 @@ mongoose.connect(MONGO_URL).then(()=>{
     console.log(err);
     
 })
+
+// let activeUsers=[]
+
+// io.on("connection", (socket)=>{
+//     // console.log("chatga kimdir kirdi...");
+//    socket.on("new-user-add",(userId)=>{
+//     if(!activeUsers.some(user=> user.userId == userId)){
+//        activeUsers.push({userId,socketId:socket.id}) 
+//     //    console.log(activeUsers);
+       
+//     }
+//     io.emit("get-users",activeUsers)
+//    })
+// socket.on("disconnect",()=>{
+//   activeUsers = activeUsers.filter(user => user.socketId !== socket.id )
+// //   console.log(activeUsers);
+//   io.emit("get-users",activeUsers)
+    
+// })
+// socket.on("disconnect2",()=>{
+//   activeUsers = activeUsers.filter(user => user.socketId !== socket.id )
+// //   console.log(activeUsers);
+//   io.emit("get-users",activeUsers)
+    
+// })
+// socket.on("send-message",(data)=>{
+//     const {receivedId}=data
+//     const user = activeUsers.find(user => user.userId === receivedId)
+// if(user){
+//     io.to(user.socketId).emit("answer-meesage",data)
+// }
+
+// })
+
+
+// })
