@@ -20,8 +20,8 @@ post uchun functionlar:
 comment uchun functionlar: 
 16.addComment✅ 
 17.getComment✅ 
-18.updateCommnet
-19.deleteComment
+18.updateCommnet✅
+19.deleteComment✅
 
 notficantion uchun functionlar:
 20.sendNT✅ 
@@ -47,3 +47,4 @@ deleteUser-user o'chib ketisin keyin unga tegishli postlar(like ,comment ham) o'
 ✅-bajarilgan
 ❌-bekor qiligan
 ⌛-to'liq emas
+⌛✅-to'g'lash kerak -aptimalash tirish kerak

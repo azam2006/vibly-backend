@@ -55,17 +55,60 @@ const commentCtrl={
             res.status(503).json({ message: error.message });
         }
     },
-    deleteComment:async(req,res)=>{
+    deleteComment: async (req, res) => {
         try {
-            
-            
+            const { commentId } = req.params;
+
+            const comment = await Comment.findById(commentId);
+            if (!comment) {
+                return res.status(404).json({ message: "Comment is not found!" });
+            }
+
+            const post = await Post.findById(comment.postId);
+            if (!post) {
+                return res.status(404).json({ message: "Post is not found!" });
+            }
+
+            if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
+                return res.status(403).json({ message: "You can delete only your comment!" });
+            }
+
+            await Post.findByIdAndUpdate(comment.postId, {
+                $pull: { comments: comment._id }
+            });
+
+            await Comment.findByIdAndDelete(commentId);
+
+            return res.status(200).json({ message: "Comment is deleted successfully", comment });
+
         } catch (error) {
-            console.log(error);
-            res.status(503).json({ message: error.message });
+            console.error(error);
+            return res.status(503).json({ message: error.message });
         }
     },
     updateComment:async(req,res)=>{
-        try {
+        try { 
+        const { commentId } = req.params;
+        const { content } = req.body;
+
+        if (!content) {
+            return res.status(400).json({ message: "Content is required to update comment" });
+        }
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        // faqat o'z kommentini yangilashga ruxsat berish
+        if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
+            return res.status(403).json({ message: "You can only update your own comment" });
+        }
+
+        comment.content = content;
+        await comment.save();
+
+        return res.status(200).json({ message: "Comment updated successfully", comment });
             
         } catch (error) {
             console.log(error);
