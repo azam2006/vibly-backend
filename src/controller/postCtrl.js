@@ -70,7 +70,7 @@ getFollowersPosts: async (req, res) => {
 
     // 2. Follow qilingan userlarning postlari (likes bo‘yicha)
     const followedPosts = await Post.find({ userId: { $in: followedIds } })
-      .populate("userId", "username profileImage")
+      .populate("userId", "username surname profileImage")
       .sort({ likes: -1 });
 
     // 3. Follow qilingan post IDlari
@@ -85,7 +85,7 @@ getFollowersPosts: async (req, res) => {
 
     // 5. Birlashtirish: Follow qilinganlar tepada, boshqalar pastda
     const allPosts = [...followedPosts, ...otherPosts];
-
+ 
     res.status(200).json(allPosts);
     
   } catch (error) {
