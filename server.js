@@ -19,15 +19,18 @@ const commentR =require('./src/router/commentRouter')
 const notficantionR =require('./src/router/notificationR')
  
 const app=express()
+
 const PORT= process.env.PORT||4001
-const server=http.createServer(app)
-const io = socketIo(server,{
-    cors:{
-        // origin:"www.netlify-chat-app.netlify.app"
-        origin:"*"
-        // method:["GET","POST"]
-    }
-})
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // xavfsizlik uchun kerak bo‘lsa o‘zgartiring
+    // methods: ["*"]
+  }
+});
+
+app.set('io', io); 
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -45,7 +48,7 @@ app.use("/api",notficantionR)
 
 const MONGO_URL=process.env.MONGO_URL
 mongoose.connect(MONGO_URL).then(()=>{
-    app.listen(PORT,()=>{console.log(`${PORT}-working`);
+    server.listen(PORT,()=>{console.log(`${PORT}-working`);
     })
 }).catch((err)=>{
     console.log(err);

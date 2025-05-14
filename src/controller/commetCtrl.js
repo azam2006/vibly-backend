@@ -1,13 +1,14 @@
 const Post = require("../model/postModel")
 const Comment = require("../model/commetModel");
-const notificationM = require("../model/notificationM");
+const Notification = require("../model/notificationM");
 
-const commentCtrl={
+const commentCtrl = {
     addComment: async (req, res) => {
         try {
             const { content, postId } = req.body;
             const userId = req.user._id;
-    
+            const io = req.app.get('io');
+
             if (!content) {
                 return res.status(402).json({ message: "Please add content" });
             }
@@ -16,40 +17,46 @@ const commentCtrl={
                 return res.status(404).json({ message: "Post not found" });
             }
             const newComment = await Comment.create({ userId, content, postId });
-    
+
             await Post.findByIdAndUpdate(postId, {
                 $push: { comments: newComment._id }
             });
-            await notificationM.create({
+            await Notification.create({
                 recipient: post.userId,
                 sender: userId,
                 type: 'comment',
                 postId: post._id
-              });
-              
-    
+            });
+            io.to(post.userId.toString()).emit('newNotification', {
+                type: 'comment', 
+                sender: userId,
+                postId: post._id 
+            });
+
+
+
             res.status(201).json({ message: "Comment added successfully!", comment: newComment });
-    
+
         } catch (error) {
             console.log(error);
             res.status(503).json({ message: error.message });
         }
     },
-    
-    getComment:async(req,res)=>{
+
+    getComment: async (req, res) => {
         try {
             const { postId } = req.params;
 
-        if (!postId) {
-            return res.status(400).json({ message: "postId is required" });
-        }
+            if (!postId) {
+                return res.status(400).json({ message: "postId is required" });
+            }
 
-        const comments = await Comment.find({ postId })
-            .populate("userId", "username email profileImage ") // foydalanuvchi ma’lumotlarini olib kelish
+            const comments = await Comment.find({ postId })
+                .populate("userId", "username email profileImage ") // foydalanuvchi ma’lumotlarini olib kelish
             // .populate("postId", "title"); // ixtiyoriy: post nomini ham ko‘rsatish
 
-        res.status(200).json({ message: "Comments for the post", comments });
-            
+            res.status(200).json({ message: "Comments for the post", comments });
+
         } catch (error) {
             console.log(error);
             res.status(503).json({ message: error.message });
@@ -86,35 +93,35 @@ const commentCtrl={
             return res.status(503).json({ message: error.message });
         }
     },
-    updateComment:async(req,res)=>{
-        try { 
-        const { commentId } = req.params;
-        const { content } = req.body;
+    updateComment: async (req, res) => {
+        try {
+            const { commentId } = req.params;
+            const { content } = req.body;
 
-        if (!content) {
-            return res.status(400).json({ message: "Content is required to update comment" });
-        }
+            if (!content) {
+                return res.status(400).json({ message: "Content is required to update comment" });
+            }
 
-        const comment = await Comment.findById(commentId);
-        if (!comment) {
-            return res.status(404).json({ message: "Comment not found" });
-        }
+            const comment = await Comment.findById(commentId);
+            if (!comment) {
+                return res.status(404).json({ message: "Comment not found" });
+            }
 
-        // faqat o'z kommentini yangilashga ruxsat berish
-        if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
-            return res.status(403).json({ message: "You can only update your own comment" });
-        }
+            // faqat o'z kommentini yangilashga ruxsat berish
+            if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
+                return res.status(403).json({ message: "You can only update your own comment" });
+            }
 
-        comment.content = content;
-        await comment.save();
+            comment.content = content;
+            await comment.save();
 
-        return res.status(200).json({ message: "Comment updated successfully", comment });
-            
+            return res.status(200).json({ message: "Comment updated successfully", comment });
+
         } catch (error) {
             console.log(error);
             res.status(503).json({ message: error.message });
         }
     }
 }
-module.exports=commentCtrl
+module.exports = commentCtrl
 

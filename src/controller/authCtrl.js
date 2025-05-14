@@ -7,9 +7,9 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const authCtrl = {
   signup: async (req, res) => {
     try {
-      const { username, surname, email, password, dateBirth,role } = req.body;
+      const { username, surname, email, password,role } = req.body;
       
-      if (!username || !surname || !email || !password || !dateBirth) {
+      if (!username || !surname || !email || !password) {
         return res.status(403).json({ message: "Please fill all fields" });
       }
       const oldUser = await User.findOne({ email });
@@ -17,17 +17,7 @@ const authCtrl = {
         return res.status(400).json({ message: "This email already exists!" });
       }
       
-      const birthDate = new Date(dateBirth);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      
-      if (age < 18) {
-        return res.status(403).json({ message: "You must be at least 18 years old to sign up." });
-      }
+  
       
       
       const hashPassword = await bcrypt.hash(password, 10);

@@ -41,10 +41,6 @@ const UserSchema = new mongoose.Schema({
       default:"user",
       enum:['user','admin','mode'], 
   },
-    dateBirth: {
-     type: Date,
-     required:true
-     },
      savedPosts: [{ 
       type: mongoose.Schema.Types.ObjectId,
        ref: 'Post' }],

@@ -63,9 +63,9 @@ const postCtrl = {
   },
 getFollowersPosts: async (req, res) => {
   try {
-    const currentUserId = req.user._id;
+    const UserId = req.user._id;
 
-    const currentUser = await User.findById(currentUserId).select("followed");
+    const currentUser = await User.findById(UserId).select("followed");
     const followedIds = currentUser.followed;
 
     // 2. Follow qilingan userlarning postlari (likes bo‘yicha)
@@ -83,10 +83,10 @@ getFollowersPosts: async (req, res) => {
       .populate("userId", "username profileImage")
       .sort({ likes: -1 });
 
-    // 5. Birlashtirish: Follow qilinganlar tepada, boshqalar pastda
+  
     const allPosts = [...followedPosts, ...otherPosts];
  
-    res.status(200).json(allPosts);
+    res.status(200).json({message:"get all posts",allPosts});
     
   } catch (error) {
     console.log(error);
@@ -116,6 +116,7 @@ getFollowersPosts: async (req, res) => {
     try {
       const { postId } = req.params;
       const userId = req.user._id;
+      const io = req.app.get('io');
       const post = await Post.findById(postId);
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
@@ -135,6 +136,11 @@ getFollowersPosts: async (req, res) => {
             type: 'like',
             postId: post._id
           });
+            io.to(post.userId.toString()).emit('newNotification', {
+           type: 'like',
+           sender: userId,
+           postId: post._id
+  });
         }
       }
 

@@ -6,7 +6,7 @@ user uchun functionlar :
   5.searchUser✅,
   6.follow✅
   7.unfollow✅ 
-  8.deleteUser⌛
+  8.deleteUser✅
   9.updateUser✅
 
 post uchun functionlar: 
