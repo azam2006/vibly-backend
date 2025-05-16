@@ -13,6 +13,7 @@ const commentCtrl = {
                 return res.status(402).json({ message: "Please add content" });
             }
             const post = await Post.findById(postId);
+            const senderUser = await User.findById(userId).select("username");
             if (!post) {
                 return res.status(404).json({ message: "Post not found" });
             }
@@ -29,7 +30,7 @@ const commentCtrl = {
             });
             io.to(post.userId.toString()).emit('newNotification', {
                 type: 'comment', 
-                sender: userId,
+                sender: senderUser,
                 postId: post._id 
             });
 

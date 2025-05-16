@@ -1,4 +1,4 @@
-const notificationM = require("../model/notificationM");
+const Notification = require("../model/notificationM");
 
 
 const notficantionCtrl={
@@ -7,12 +7,12 @@ getNTF: async (req, res) => {
     const userId = req.user._id;
 
     // Hammasini olish (isRead: true yoki false)
-    const notifications = await notificationM.find({ recipient: userId })
+    const notifications = await Notification.find({ recipient: userId })
       .sort({ createdAt: -1 })
       .populate('sender', 'username');
 
     // O'qilmaganlar sonini aniqlash
-    const unreadCount = await notificationM.countDocuments({ recipient: userId, isRead: false });
+    const unreadCount = await Notification.countDocuments({ recipient: userId, isRead: false });
 
     res.status(200).json({message:"Notifications",notifications,unreadCount});
   } catch (error) {
@@ -22,16 +22,22 @@ getNTF: async (req, res) => {
 },
   checkNTF: async (req, res) => {
     try {
-      const userId = req.user._id;
-  
-      await notificationM.updateMany(
-        { recipient: userId, isRead: false }, // Faqat o‘qilmaganlar
-        { $set: { isRead: true } }            // Endi o‘qilgan deb belgilaymiz
-      );
-      const notifications = await notificationM.find({ recipient: userId })
-      .sort({ createdAt: -1 })
-      
-      res.status(200).json({ message: "All notifications marked as read." ,notifications });
+       const userId = req.user._id;
+       const { id } = req.params;
+
+
+    const updated = await Notification.findOneAndUpdate(
+      { _id: id, recipient: userId, isRead: false },
+      { $set: { isRead: true } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Notification not found or already read." });
+    }
+
+    // Yangilangan holatni qaytaramiz
+    res.status(200).json({ message: "Notification marked as read.", notification: updated });
     } catch (error) {
       console.log(error);
       res.status(503).json({ message: error.message });
@@ -42,7 +48,7 @@ deleteOneNTF: async (req, res) => {
     const userId = req.user._id;
     const { id } = req.params; // notificationId
 
-    const notification = await notificationM.findById(id)
+    const notification = await Notification.findById(id)
       .populate('sender', 'username')
 
     if (!notification) {
@@ -70,12 +76,12 @@ deleteOneNTF: async (req, res) => {
 deleteAllNTF: async (req, res) => {
   try {
     const userId = req.user._id;
-    const notificationsToDelete = await notificationM.find({ recipient: userId })
+    const notificationsToDelete = await Notification.find({ recipient: userId })
       .populate('sender', 'username ')
       .sort({ createdAt: -1 });
 
    
-    await notificationM.deleteMany({ recipient: userId });
+    await Notification.deleteMany({ recipient: userId });
 
     res.status(200).json({
       message: "All your notifications deleted successfully.",

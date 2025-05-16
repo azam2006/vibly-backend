@@ -27,7 +27,6 @@ const authCtrl = {
         surname,
         email,
         password: hashPassword,
-        dateBirth,
         role
       });
       

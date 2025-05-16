@@ -121,7 +121,7 @@ getFollowersPosts: async (req, res) => {
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-
+const senderUser = await User.findById(userId).select("username");
       const isLiked = post.likes.includes(userId);
       if (isLiked) {
         //  unliked
@@ -138,7 +138,7 @@ getFollowersPosts: async (req, res) => {
           });
             io.to(post.userId.toString()).emit('newNotification', {
            type: 'like',
-           sender: userId,
+           sender: senderUser,
            postId: post._id
   });
         }

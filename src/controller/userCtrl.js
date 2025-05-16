@@ -2,6 +2,7 @@ const notificationM = require("../model/notificationM");
 const Post = require("../model/postModel");
 const User = require("../model/userModel")
 const Comment = require("../model/commetModel")
+const Notification = require("../model/notificationM")
 const cloudinary = require("cloudinary")
 const bcrypt = require("bcrypt");
 const fs = require("fs")
@@ -126,6 +127,7 @@ const userCtrl = {
       }
 
       const isFollowing = userToFollow.follower.includes(userId);
+      const senderUser = await User.findById(userId).select("username");
 
       if (isFollowing) {
         // unfollow
@@ -142,7 +144,7 @@ const userCtrl = {
         });
         io.to(userToFollow._id.toString()).emit('newNotification', {
           type: 'follow',
-          sender: userId
+          sender: senderUser
         });
 
       }
@@ -181,6 +183,7 @@ const userCtrl = {
       // Post va commentlarni topamiz
       const posts = await Post.find({ userId: id });
       const comments = await Comment.find({ userId: id });
+      const notifications = await Notification.find({ recipient: id });
 
       // Postlar mavjud bo‘lsa, ularga tegishli commentlar va rasmni o‘chiramiz
       if (posts.length > 0) {
@@ -197,6 +200,9 @@ const userCtrl = {
       // Commentlar mavjud bo‘lsa, o‘chiramiz
       if (comments.length > 0) {
         await Comment.deleteMany({ userId: id });
+      }
+      if (notifications.length > 0) {
+        await Comment.deleteMany({ recipient: id });
       }
 
       // Follower/followed ro‘yxatlaridan olib tashlaymiz
