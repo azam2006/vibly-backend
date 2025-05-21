@@ -64,8 +64,15 @@ const postCtrl = {
 getFollowersPosts: async (req, res) => {
   try {
     const UserId = req.user._id;
+// console.log(req.user);
+
 
     const currentUser = await User.findById(UserId).select("followed");
+    //  console.log(currentUser);
+     
+    if (!currentUser) {
+  return res.status(404).json({ message: "User not found" });
+}
     const followedIds = currentUser.followed;
 
     // 2. Follow qilingan userlarning postlari (likes bo‘yicha)
@@ -80,7 +87,7 @@ getFollowersPosts: async (req, res) => {
     const otherPosts = await Post.find({
         _id: { $nin: followedPostIds }
     })
-      .populate("userId", "username profileImage")
+      .populate("userId", "username surname profileImage")
       .sort({ likes: -1 });
 
   
@@ -93,7 +100,6 @@ getFollowersPosts: async (req, res) => {
     res.status(503).json({ message: error.message });
   }
 },
-
 
   getOnePost: async (req, res) => {
     try {

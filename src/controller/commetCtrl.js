@@ -1,4 +1,5 @@
 const Post = require("../model/postModel")
+const User = require("../model/userModel")
 const Comment = require("../model/commetModel");
 const Notification = require("../model/notificationM");
 
