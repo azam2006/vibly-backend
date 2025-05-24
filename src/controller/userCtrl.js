@@ -45,10 +45,11 @@ const userCtrl = {
       const posts = await Post.find({ userId }).sort({ likes: -1 });
 
       res.status(200).json({
-        message: "found user", user: {
-          ...user,
-          posts: posts
-        }
+        message: "found user",
+        user: {
+        ...user.toObject(),
+        posts: posts
+      }
       });
     } catch (error) {
       console.log(error);

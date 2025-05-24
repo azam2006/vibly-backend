@@ -105,7 +105,7 @@ getFollowersPosts: async (req, res) => {
     try {
       const { postId } = req.params;
 
-      const post = await Post.findById(postId).populate("userId", "username profileImage");
+      const post = await Post.findById(postId).populate("userId", "username surname profileImage");
 
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
