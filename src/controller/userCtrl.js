@@ -42,7 +42,7 @@ const userCtrl = {
         return res.status(404).json({ message: "User topilmadi" });
       }
 
-      const posts = await Post.find({ userId }).sort({ likes: -1 });
+      const posts = await Post.find({ userId }).populate('userId','username surname profileImage').sort({ likes: -1 });
 
       res.status(200).json({
         message: "found user",
@@ -186,6 +186,7 @@ const userCtrl = {
       const comments = await Comment.find({ userId: id });
       const notifications = await Notification.find({ recipient: id });
 
+
       // Postlar mavjud bo‘lsa, ularga tegishli commentlar va rasmni o‘chiramiz
       if (posts.length > 0) {
         for (const post of posts) {
@@ -203,10 +204,10 @@ const userCtrl = {
         await Comment.deleteMany({ userId: id });
       }
       if (notifications.length > 0) {
-        await Comment.deleteMany({ recipient: id });
+        await Notification.deleteMany({ recipient: id });
       }
 
-      // Follower/followed ro‘yxatlaridan olib tashlaymiz
+      await Post.updateMany({ "comments.userId": id },{ $pull: { comments: { userId: id } } });
       await User.updateMany({ follower: id }, { $pull: { follower: id } });
       await User.updateMany({ followed: id }, { $pull: { followed: id } });
 
