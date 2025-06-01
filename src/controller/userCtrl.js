@@ -23,6 +23,7 @@ const removeTempFile = (path) => {
   });
 };
 const userCtrl = {
+
   getAllUsers: async (req, res) => {
     try {
       const users = await User.find().select('-password')
@@ -33,6 +34,26 @@ const userCtrl = {
       res.status(503).json({ message: error.message });
     }
   },
+
+getTopUsers: async (req, res) => {
+  try {
+    if (!req.userAdmin) {
+      return res.status(403).json({ message: "Ruxsat yo'q" });
+    }
+
+    const topUsers = await User.find()
+      .select('-password')
+      .sort({ follower: -1 }) 
+      .limit(20);
+
+    res.status(200).json({ message: "Top 20 users with most followers", users: topUsers });
+
+  } catch (error) {
+    console.log(error);
+    res.status(503).json({ message: error.message });
+  }
+},
+
   getOneUser: async (req, res) => {
     try {
       const userId = req.params.id;

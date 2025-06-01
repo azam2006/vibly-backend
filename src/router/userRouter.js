@@ -4,6 +4,7 @@ const middelware=require("../middleware/userMiddleware")
 const User=require("../controller/userCtrl")
 
 router.get('/user',User.getAllUsers)
+router.get('/user/top', middelware,User.getTopUsers)
 router.get('/user/:id',User.getOneUser)
 router.get('/user',User.searchUser)
 router.delete('/user/:id',middelware,User.deleteUser)

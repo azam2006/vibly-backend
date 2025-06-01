@@ -101,6 +101,20 @@ getFollowersPosts: async (req, res) => {
   }
 },
 
+ getPost: async (req, res) => {
+    try {
+       if (!req.userAdmin) {
+      return res.status(403).json({ message: "You don't have an access" });
+    }
+      const getPost = await Post.find().sort({ likes: -1 })
+      // console.log(getPost);
+      res.status(200).json({ message: "get all Posts", getPost })
+    } catch (error) {
+      console.log(error);
+      res.status(503).json({ message: error.message });
+   
+  }},
+
   getOnePost: async (req, res) => {
     try {
       const { postId } = req.params;
@@ -260,36 +274,3 @@ const senderUser = await User.findById(userId).select("username");
 
 
 module.exports = postCtrl;
-
-
-
-  // getPost: async (req, res) => {
-  //   try {
-  //     const getPost = await Post.find().sort({ likes: -1 })
-  //     // console.log(getPost);
-  //     res.status(200).json({ message: "get all Posts", getPost })
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(503).json({ message: error.message });
-  //   }
-  // }, getFollowersPosts: async (req, res) => {
-  //   try {
-  //     const currentUserId = req.user._id;
-
-  //     // 1. Kim meni kuzatadi? follower bo‘lib turgan userlar:
-  //     const followers = await User.find({ follower: currentUserId }).select('_id');
-
-  //     const followerIds = followers.map(user => user._id);
-
-  //     // 2. Shu userlarning postlarini topamiz
-  //     const posts = await Post.find({ userId: { $in: followerIds } })
-  //       .populate('userId', 'username profileImage')
-  //       .sort({ likes: -1 });
-        
-
-  //     res.status(200).json(posts);
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(503).json({ message: error.message });
-  //   }
-  // },
