@@ -10,10 +10,14 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decodedUser = JWT.verify(token, JWT_SECRET_KEY);
-    req.user = decodedUser;
-    if(decodedUser.role == 'admin'){
-      req.userAdmin=true
-     }
+    req.user = {
+  ...decodedUser,
+  isAdmin: decodedUser.role === "admin"
+};
+    // req.user = decodedUser;
+    // if(decodedUser.role == 'admin'){
+    //   req.user.isAdmin=true
+    //  }
     next();
   } catch (error) {
     return res.status(403).json({ message: "Invalid or expired token" });

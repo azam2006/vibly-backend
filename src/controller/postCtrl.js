@@ -103,10 +103,10 @@ getFollowersPosts: async (req, res) => {
 
  getPost: async (req, res) => {
     try {
-       if (!req.userAdmin) {
+       if (!req.user.isAdmin) {
       return res.status(403).json({ message: "You don't have an access" });
     }
-      const getPost = await Post.find().sort({ likes: -1 })
+      const getPost = await Post.find().populate("userId", "username surname profileImage").sort({ likes: -1 })
       // console.log(getPost);
       res.status(200).json({ message: "get all Posts", getPost })
     } catch (error) {
@@ -183,7 +183,7 @@ const senderUser = await User.findById(userId).select("username");
     try {
       const { id } = req.params;
       const userId = req.user._id;
-      const isAdmin = req.userAdmin
+      const isAdmin = req.user.isAdmin
 
       const post = await Post.findById(id);
 
@@ -220,7 +220,7 @@ const senderUser = await User.findById(userId).select("username");
     try {
       const { id } = req.params;
       const userId = req.user._id;
-      const isAdmin = req.userAdmin;
+      const isAdmin = req.user.isAdmin;
 
 
       const post = await Post.findById(id);

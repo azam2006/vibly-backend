@@ -37,7 +37,7 @@ const userCtrl = {
 
 getTopUsers: async (req, res) => {
   try {
-    if (!req.userAdmin) {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ message: "Ruxsat yo'q" });
     }
 
@@ -190,7 +190,7 @@ getTopUsers: async (req, res) => {
     try {
       const { id } = req.params;
       const userId = req.user._id;
-      const isAdmin = req.userAdmin;
+      const isAdmin = req.user.isAdmin;
 
       // Faqat o'zini yoki admin o'chira oladi
       if (userId.toString() !== id.toString() && !isAdmin) {
@@ -256,7 +256,7 @@ getTopUsers: async (req, res) => {
     try {
       const { id } = req.params;
       const userId = req.user._id;
-      const isAdmin = req.userAdmin;
+      const isAdmin = req.user.isAdmin;
       const updateData = { ...req.body };
 
       if (userId.toString() !== id.toString() && !isAdmin) {

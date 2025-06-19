@@ -78,7 +78,7 @@ const commentCtrl = {
                 return res.status(404).json({ message: "Post is not found!" });
             }
 
-            if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
+            if (comment.userId.toString() !== req.user._id.toString() && !req.user.isAdmin) {
                 return res.status(403).json({ message: "You can delete only your comment!" });
             }
 
@@ -110,7 +110,7 @@ const commentCtrl = {
             }
 
             // faqat o'z kommentini yangilashga ruxsat berish
-            if (comment.userId.toString() !== req.user._id.toString() && !req.userAdmin) {
+            if (comment.userId.toString() !== req.user._id.toString() && !req.user.isAdmin) {
                 return res.status(403).json({ message: "You can only update your own comment" });
             }
 
