@@ -64,6 +64,20 @@ const commentCtrl = {
             res.status(503).json({ message: error.message });
         }
     },
+    getAdminComment: async(req,res)=>{
+            try {
+               if (!req.user.isAdmin) {
+              return res.status(403).json({ message: "You don't have an access" });
+            }
+              const getComment = await Comment.find().populate("userId", "username surname profileImage").sort({ createdAt:-1 })
+              // console.log(getComment);
+              res.status(200).json({ message: "get all comments",comments:getComment })
+            } catch (error) {
+              console.log(error);
+              res.status(401).json({ message: error.message });
+           
+          }
+    },
     deleteComment: async (req, res) => {
         try {
             const { commentId } = req.params;
