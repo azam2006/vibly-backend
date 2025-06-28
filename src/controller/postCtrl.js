@@ -216,60 +216,115 @@ const senderUser = await User.findById(userId).select("username");
       res.status(503).json({ message: error.message });
     }
   },
-  updatePost: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const userId = req.user._id;
-      const isAdmin = req.user.isAdmin;
+  // updatePost: async (req, res) => {
+  //   try {
+  //     const { id } = req.params;
+  //     const userId = req.user._id;
+  //     const isAdmin = req.user.isAdmin;
 
 
-      const post = await Post.findById(id);
-      if (!post) {
-        return res.status(404).json({ message: "Post not found" });
-      }
-      const isOwner = post.userId.toString() === userId.toString();
+  //     const post = await Post.findById(id);
+  //     if (!post) {
+  //       return res.status(404).json({ message: "Post not found" });
+  //     }
+  //     const isOwner = post.userId.toString() === userId.toString();
 
-      if (!isOwner && !isAdmin) {
-        return res.status(403).json({ message: "Access denied" });
-      }
+  //     if (!isOwner && !isAdmin) {
+  //       return res.status(403).json({ message: "Access denied" });
+  //     }
 
-      const content = req.body.content?.trim();
-      if (content) post.content = content;
+  //     const content = req.body.content?.trim();
+  //     if (content) post.content = content;
 
-      // Rasmni butunlay o‘chirish (foydalanuvchi belgilasa)
-      if (req.body.removeImage === "true" && post.postImage?.public_id) {
-        await cloudinary.v2.uploader.destroy(post.postImage.public_id);
-        post.postImage = {}; // rasm maydoni bo‘shatildi
-      }
+  //     // Rasmni butunlay o‘chirish (foydalanuvchi belgilasa)
+  //     if (req.body.removeImage === "true" && post.postImage?.public_id) {
+  //       await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+  //       post.postImage = {}; // rasm maydoni bo‘shatildi
+  //     }
 
-      // Yangi rasm bo‘lsa: eski rasmni o‘chirib, yangisini qo‘shamiz
-      if (req.files?.postImage) {
-        const { postImage } = req.files;
+  //     // Yangi rasm bo‘lsa: eski rasmni o‘chirib, yangisini qo‘shamiz
+  //     if (req.files?.postImage) {
+  //       const { postImage } = req.files;
  
-        const result = await cloudinary.v2.uploader.upload(postImage.tempFilePath, {
-          folder: "OnlineGallery",
-        });
+  //       const result = await cloudinary.v2.uploader.upload(postImage.tempFilePath, {
+  //         folder: "OnlineGallery",
+  //       });
 
-        if (post.postImage?.public_id) {
-          await cloudinary.v2.uploader.destroy(post.postImage.public_id);
-        }       
+  //       if (post.postImage?.public_id) {
+  //         await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+  //       }       
 
-        removeTempFile(postImage.tempFilePath);
+  //       removeTempFile(postImage.tempFilePath);
 
-        post.postImage = {
-          url: result.url,
-          public_id: result.public_id,
-        };
+  //       post.postImage = {
+  //         url: result.url,
+  //         public_id: result.public_id,
+  //       };
+  //     }
+
+  //     await post.save();
+
+  //     res.status(200).json({ message: "Post updated successfully", post });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // }
+  updatePost: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const isAdmin = req.user.isAdmin;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const isOwner = post.userId.toString() === userId.toString();
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const content = req.body.content?.trim();
+    if (content) post.content = content;
+
+    if (req.body.removeImage === "true" && post.postImage?.public_id) {
+      await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+      post.postImage = {};
+    }
+
+    if (req.files?.postImage) {
+      const { postImage } = req.files;
+      const result = await cloudinary.v2.uploader.upload(postImage.tempFilePath, {
+        folder: "OnlineGallery",
+      });
+
+      if (post.postImage?.public_id) {
+        await cloudinary.v2.uploader.destroy(post.postImage.public_id);
       }
 
-      await post.save();
+      removeTempFile(postImage.tempFilePath);
 
-      res.status(200).json({ message: "Post updated successfully", post });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: error.message });
+      post.postImage = {
+        url: result.url,
+        public_id: result.public_id,
+      };
+    } else if (post.postImage?.public_id) {
+      // Agar yangi rasm kelmasa, mavjud rasmni o‘chirib tashlaymiz
+      await cloudinary.v2.uploader.destroy(post.postImage.public_id);
+      post.postImage = {};
     }
+
+    await post.save();
+
+    res.status(200).json({ message: "Post updated successfully", post });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
+}
+
 };
 
 
