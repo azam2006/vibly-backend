@@ -252,70 +252,136 @@ getTopUsers: async (req, res) => {
       res.status(503).json({ message: error.message });
     }
   },
+  // updateUser: async (req, res) => {
+  //   try {
+  //     const { id } = req.params;
+  //     const userId = req.user._id;
+  //     const isAdmin = req.user.isAdmin;
+  //     const updateData = { ...req.body };
+
+  //     if (userId.toString() !== id.toString() && !isAdmin) {
+  //       return res.status(403).json({ message: "Access denied" });
+  //     }
+
+  //     const user = await User.findById(id);
+  //     if (!user) {
+  //       return res.status(404).json({ message: "User not found" });
+  //     }
+  //       if (updateData.email) {
+  //     const oldUser = await User.findOne({ email:updateData.email });
+  //     if (oldUser && oldUser._id.toString() !== id.toString()) {
+  //       return res.status(400).json({ message: "This email already exists!" });
+  //     }
+  //   }
+
+  //        if(updateData.password && updateData.password.length > 0){
+  //                   const hashedPassword= await bcrypt.hash(updateData.password,10)
+  //                   updateData.password=hashedPassword
+  //               }else{
+  //                   delete updateData.password
+  //               }     
+
+  //     if (req.files?.profileImage) {
+  //       const file = req.files.profileImage;
+
+  //       const result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
+  //         folder: "onlineGallary"
+  //       });
+  //       // Eski rasmni o‘chirish
+  //       if (user.profileImage?.public_id) {
+  //         await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+  //       }
+
+  //       // Yangi rasmni Cloudinary’ga yuklash
+
+  //       // Vaqtinchalik faylni o‘chirish
+  //       removeTempFile(file.tempFilePath);
+
+  //       // Rasmni yangilangan ma'lumotlarga qo‘shish
+  //      updateData.profileImage = {
+  //         url: result.url,
+  //         public_id: result.public_id
+  //       };
+  //     }
+
+  //     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+
+  //     res.status(200).json({
+  //       message: "User updated successfully",
+  //       updatedUser
+  //     });
+
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // }
   updateUser: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const userId = req.user._id;
-      const isAdmin = req.user.isAdmin;
-      const updateData = { ...req.body };
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const isAdmin = req.user.isAdmin;
+    const updateData = { ...req.body };
 
-      if (userId.toString() !== id.toString() && !isAdmin) {
-        return res.status(403).json({ message: "Access denied" });
-      }
+    if (userId.toString() !== id.toString() && !isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
-      const user = await User.findById(id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-        if (updateData.email) {
-      const oldUser = await User.findOne({ email:updateData.email });
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (updateData.email) {
+      const oldUser = await User.findOne({ email: updateData.email });
       if (oldUser && oldUser._id.toString() !== id.toString()) {
         return res.status(400).json({ message: "This email already exists!" });
       }
     }
 
-         if(updateData.password && updateData.password.length > 0){
-                    const hashedPassword= await bcrypt.hash(updateData.password,10)
-                    updateData.password=hashedPassword
-                }else{
-                    delete updateData.password
-                }     
+    if (updateData.password && updateData.password.length > 0) {
+      const hashedPassword = await bcrypt.hash(updateData.password, 10);
+      updateData.password = hashedPassword;
+    } else {
+      delete updateData.password;
+    }
 
-      if (req.files?.profileImage) {
-        const file = req.files.profileImage;
+    if (req.files?.profileImage) {
+      const file = req.files.profileImage;
 
-        const result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
-          folder: "onlineGallary"
-        });
-        // Eski rasmni o‘chirish
-        if (user.profileImage?.public_id) {
-          await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
-        }
-
-        // Yangi rasmni Cloudinary’ga yuklash
-
-        // Vaqtinchalik faylni o‘chirish
-        removeTempFile(file.tempFilePath);
-
-        // Rasmni yangilangan ma'lumotlarga qo‘shish
-       updateData.profileImage = {
-          url: result.url,
-          public_id: result.public_id
-        };
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
-
-      res.status(200).json({
-        message: "User updated successfully",
-        updatedUser
+      const result = await cloudinary.v2.uploader.upload(file.tempFilePath, {
+        folder: "onlineGallary"
       });
 
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: error.message });
+      if (user.profileImage?.public_id) {
+        await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+      }
+
+      removeTempFile(file.tempFilePath);
+
+      updateData.profileImage = {
+        url: result.url,
+        public_id: result.public_id
+      };
+    } else if (user.profileImage?.public_id) {
+      // Foydalanuvchida eski rasm bo'lsa, va yangi rasm kelmagan bo'lsa o'chirib tashlash
+      await cloudinary.v2.uploader.destroy(user.profileImage.public_id);
+      updateData.profileImage = {};
     }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      updatedUser
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
   }
+}
+
 
 
 
